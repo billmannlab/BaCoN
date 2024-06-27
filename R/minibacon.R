@@ -1,7 +1,7 @@
 ## ---- MiniBaCoN function ----
 
 #' @import data.table
-#' @export
+#' @export miniBaCoN
 #' @returns A BaCoN-matrix of the input correlation matrix.
 
 miniBaCoN <- function(input_matrix, cf = 0.05, .th = NA, verbose = T) {
