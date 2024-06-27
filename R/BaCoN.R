@@ -4,6 +4,8 @@
 #' @importFrom future.apply future_apply
 #' @importFrom future plan
 #' @importFrom future multisession
+#' @importFrom utils capture.output
+#' @importFrom stats sd
 #' @export BaCoN
 #' @returns A BaCoN-matrix of the input correlation matrix.
 
@@ -47,7 +49,7 @@ BaCoN <- function(input_matrix, corr_f = 0.05,
 
   if (verbose) {
     message("Possible thresholds:")
-    message(paste0(capture.output(round(possible_ths, 3)), collapse = "\n"))}
+    message(paste0(utils::capture.output(round(possible_ths, 3)), collapse = "\n"))}
 
   if (verbose) {
     message(paste0("\nChosen threshold: ", positive_th, ", chosen correction factor: ", corr_f, "."))
