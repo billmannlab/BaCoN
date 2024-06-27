@@ -16,37 +16,30 @@ The quickest way to compute a BaCoN matrix is:
 1. Install `devtools` from CRAN:
 
 ```{r}
-
 if (!require("devtools", quietly = TRUE)) {
 	install.packages("devtools")
 	}
-	
 ```
 
-2. Install and load the `BaCoN` package:
+2. Install and load the `BaCoN` package into your workspace:
 
 ```{r}
-
 devtools::install_github("billmannlab/BaCoN")
 
 library(BaCoN)
-
 ```
 
 3. Compute a BaCoN matrix:
 
 ```{r}
-
 bacon_matrix <- BaCoN(correlation_matrix)
-
 ```
 
-4. In case of dependency problems or high RAM usage, please use the `miniBaCoN`function instead:
+4. In case of dependency problems or high RAM usage, please switch to the `miniBaCoN` function instead. 
+The output is equal to `BaCoN`.
 
 ```{r}
-
 bacon_matrix <- miniBaCoN(correlation_matrix)
-
 ```
 
 

@@ -2,6 +2,7 @@
 
 export(BaCoN)
 export(miniBaCoN)
+export(suggest_BaCoN_threshold)
 import(data.table)
 importFrom(future,multisession)
 importFrom(future,plan)
