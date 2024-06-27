@@ -8,21 +8,21 @@
 
 
 BaCoN <- function(input_matrix, corr_f = 0.05,
-           positive_th = "none",
-           negative_th = "none",
-           parallel = F,
-           n_cores = 1,
-           verbose = T,
-           showProgress = T,
-           simulate = F) {
+                  positive_th = "none",
+                  negative_th = "none",
+                  parallel = F,
+                  n_cores = 1,
+                  verbose = T,
+                  showProgress = T,
+                  simulate = F) {
 
   if (verbose & simulate) {
     message("Simulating BaCoN run.")
-    }
+  }
   if (n_cores > 1 & !parallel) {
     parallel <- T
     message("Switching to parallel mode. Set 'n_cores' to 1 to run the function non-parallelized.")
-    }
+  }
 
   if (verbose) {
     message(ifelse(parallel,
@@ -35,7 +35,7 @@ BaCoN <- function(input_matrix, corr_f = 0.05,
     .d <- matrix(NA, nrow = 2, ncol = 5, dimnames = list(c("value", "percentage"), c("none", 1:3, "suggested")))
     .d["value",c("none", 1:3)] <- c(0, .mean + 1:3 * .sd)
     .d["percentage",c("none", 1:3)] <- sapply(.d["value",c("none", 1:3)],
-                                             \(.) sum(abs(m) > as.numeric(.), na.rm = T) / length(m))
+                                              \(.) sum(abs(m) > as.numeric(.), na.rm = T) / length(m))
     z <- colnames(.d)[last(which(.d["percentage",c("none", 1:3)] > 0.01))]
     .d[,"suggested"] <- .d[,z]
     if (verbose) {message(paste0("Suggesting threshold ", z, "."))}
@@ -50,11 +50,11 @@ BaCoN <- function(input_matrix, corr_f = 0.05,
 
   if (verbose) {
     message(paste0("\nChosen threshold: ", positive_th, ", chosen correction factor: ", corr_f, "."))
-    }
+  }
 
   if (!positive_th %in% colnames(possible_ths)) {
     warning("Choosen threshold is not part of the available thresholds.")
-    }
+  }
 
   positive_th <- possible_ths["value",positive_th]
   negative_th <- - positive_th
@@ -62,7 +62,7 @@ BaCoN <- function(input_matrix, corr_f = 0.05,
   if (simulate) {
     message("BaCoN simulation complete.")
     return(NULL)
-    }
+  }
 
 
 
@@ -77,8 +77,8 @@ BaCoN <- function(input_matrix, corr_f = 0.05,
 
     if (showProgress) {
       pb <- progress::progress_bar$new(width = 80,
-                             force = T,
-                             format = "[:bar] :percent (:timepoint), ETA: :eta")}
+                                       force = T,
+                                       format = "[:bar] :percent (:timepoint), ETA: :eta")}
 
     if (verbose) {message("Ready to run.")}
     start_time <- Sys.time()
@@ -102,7 +102,7 @@ BaCoN <- function(input_matrix, corr_f = 0.05,
     if (showProgress) {
       pb$update(0.05,
                 tokens = list(timepoint = format(Sys.time(), "%X")))
-      }
+    }
 
     roi <- which(rowSums(!is.na(.in$pos)) > 1)
     .out$pos$h[roi,] <- t(appl_func(.in$pos[roi,], 1, vectorized_BaCoN))
@@ -110,7 +110,7 @@ BaCoN <- function(input_matrix, corr_f = 0.05,
     if (showProgress) {
       pb$update(0.25,
                 tokens = list(timepoint = format(Sys.time(), "%X")))
-      }
+    }
 
     coi <- which(colSums(!is.na(.in$pos)) > 1)
     .out$pos$v[,coi] <- appl_func(.in$pos[,coi], 2, vectorized_BaCoN)
@@ -146,7 +146,7 @@ BaCoN <- function(input_matrix, corr_f = 0.05,
 
     if (!base::length(intersect(i_pos, i_neg)) == 0) {
       print(intersect(i_pos, i_neg))
-      }
+    }
 
     .out$main[i_neg] <- - 1 + (.out$neg$merge[i_neg] / y)
 
@@ -156,9 +156,9 @@ BaCoN <- function(input_matrix, corr_f = 0.05,
 
     if (verbose) {
       message(paste0("\nCompleted after ",
-                                round(difftime(Sys.time(),
-                                               start_time,
-                                               units = "min"), 2), " minutes."))}
+                     round(difftime(Sys.time(),
+                                    start_time,
+                                    units = "min"), 2), " minutes."))}
     #.out$main <- .out$main / y
     return(.out$main)
   }
