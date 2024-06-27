@@ -1,18 +1,16 @@
 ## ---- MiniBaCoN function ----
 
 #' @import data.table
-#'
-
 #' @returns A BaCoN-matrix of the input correlation matrix.
 
-miniBaCoN <- function(.matrix, cf = 0.05, .th = NA, verbose = T) {
-  .mean <- base::mean(.matrix, na.rm = T)
-  .sd <- stats::sd(.matrix, na.rm = T)
+miniBaCoN <- function(input_matrix, cf = 0.05, .th = NA, verbose = T) {
+  .mean <- base::mean(input_matrix, na.rm = T)
+  .sd <- stats::sd(input_matrix, na.rm = T)
 
-  .d <- data.table::data.table(expand.grid(gene1 = rownames(.matrix),
-                               gene2 = colnames(.matrix),
+  .d <- data.table::data.table(expand.grid(gene1 = rownames(input_matrix),
+                               gene2 = colnames(input_matrix),
                                stringsAsFactors = T),
-                   PCC = as.vector(.matrix))
+                   PCC = as.vector(input_matrix))
 
   baconize <- \(.vec, .cf) {
     .out <- base::rep(NA, base::length(.vec))
@@ -41,11 +39,11 @@ miniBaCoN <- function(.matrix, cf = 0.05, .th = NA, verbose = T) {
     message("Done. (", format(base::Sys.time(), "%X"), ").")
     }
 
-  y <- sum(dim(.matrix))
+  y <- sum(dim(input_matrix))
   .d[, BaCoN := data.table::fcase(PCC >= 0, 1 - (b1 + b2) / y,
                       PCC < 0, -1 + (b1 + b2) / y)]
   if (!is.na(.th)) {.d[abs(PCC) < .mean + .th *.sd, BaCoN := NA]}
 
 
-  out <- base::array(.d[, BaCoN], dim = dim(.matrix), dimnames = dimnames(.matrix))
+  out <- base::array(.d[, BaCoN], dim = dim(input_matrix), dimnames = dimnames(input_matrix))
   return(out)}
