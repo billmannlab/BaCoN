@@ -7,3 +7,51 @@ Buffering between genes is fundamental for robust cellular functions. While expe
 
 
 This will be the R package containing the functions required to compute a BaCoN matrix. 
+
+# Quickstart
+
+
+The quickest way to compute a BaCoN matrix is:
+
+1. Install `devtools` from CRAN:
+
+```{r}
+
+if (!require("devtools", quietly = TRUE)) {
+	install.packages("devtools")
+	}
+	
+```
+
+2. Install and load the `BaCoN` package:
+
+```{r}
+
+devtools::install_github("billmannlab/BaCoN")
+
+library(BaCoN)
+
+```
+
+3. Compute a BaCoN matrix:
+
+```{r}
+
+bacon_matrix <- BaCoN(correlation_matrix)
+
+```
+
+4. In case of dependency problems or high RAM usage, please use the `miniBaCoN`function instead:
+
+```{r}
+
+bacon_matrix <- miniBaCoN(correlation_matrix)
+
+```
+
+
+
+
+
+
+
