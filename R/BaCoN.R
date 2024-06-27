@@ -31,7 +31,7 @@ BaCoN <- function(input_matrix, corr_f = 0.05,
     message(paste0("\nChosen threshold: ", threshold, ", chosen correction factor: ", corr_f, "."))
   }
 
-  threshold <- ifelse(threshold == "none", NA, as.numeric(threshold))
+  threshold <- ifelse(threshold == "none", 0, as.numeric(threshold))
 
   if (!is.na(threshold)) {
     threshold <- mean(input_matrix, na.rm = T) + threshold * stats::sd(input_matrix, na.rm = T)
