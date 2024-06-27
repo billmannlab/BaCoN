@@ -4,6 +4,7 @@
 #' @importFrom future.apply future_apply
 #' @importFrom future plan
 #' @importFrom future multisession
+#' @export
 #' @returns A BaCoN-matrix of the input correlation matrix.
 
 

@@ -1,6 +1,7 @@
 ## ---- MiniBaCoN function ----
 
 #' @import data.table
+#' @export
 #' @returns A BaCoN-matrix of the input correlation matrix.
 
 miniBaCoN <- function(input_matrix, cf = 0.05, .th = NA, verbose = T) {
@@ -8,9 +9,9 @@ miniBaCoN <- function(input_matrix, cf = 0.05, .th = NA, verbose = T) {
   .sd <- stats::sd(input_matrix, na.rm = T)
 
   .d <- data.table::data.table(expand.grid(gene1 = rownames(input_matrix),
-                               gene2 = colnames(input_matrix),
-                               stringsAsFactors = T),
-                   PCC = as.vector(input_matrix))
+                                           gene2 = colnames(input_matrix),
+                                           stringsAsFactors = T),
+                               PCC = as.vector(input_matrix))
 
   baconize <- \(.vec, .cf) {
     .out <- base::rep(NA, base::length(.vec))
@@ -37,11 +38,11 @@ miniBaCoN <- function(input_matrix, cf = 0.05, .th = NA, verbose = T) {
 
   if (verbose) {
     message("Done. (", format(base::Sys.time(), "%X"), ").")
-    }
+  }
 
   y <- sum(dim(input_matrix))
   .d[, BaCoN := data.table::fcase(PCC >= 0, 1 - (b1 + b2) / y,
-                      PCC < 0, -1 + (b1 + b2) / y)]
+                                  PCC < 0, -1 + (b1 + b2) / y)]
   if (!is.na(.th)) {.d[abs(PCC) < .mean + .th *.sd, BaCoN := NA]}
 
 
