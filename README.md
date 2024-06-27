@@ -34,17 +34,3 @@ library(BaCoN)
 ```{r}
 bacon_matrix <- BaCoN(correlation_matrix)
 ```
-
-4. In case of dependency problems or high RAM usage, please switch to the `miniBaCoN` function instead. 
-The output is equal to `BaCoN`.
-
-```{r}
-bacon_matrix <- miniBaCoN(correlation_matrix)
-```
-
-
-
-
-
-
-
