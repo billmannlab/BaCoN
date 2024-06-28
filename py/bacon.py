@@ -21,7 +21,7 @@ import argparse
 #%%
 
 parser = argparse.ArgumentParser(description='BaCon: Bayesian Correlation Analysis of Networks.')
-parser.add_argument('-c','--corr_matrix', help='Correlation Matrix', required=True)
+parser.add_argument('-c','--corr_matrix', help='Correlation Matrix', required=False)
 parser.add_argument('-i','--input1', help='Input Matrix 1', required=False)
 parser.add_argument('-i2','--input2', help='Input Matrix 2', required=False)
 parser.add_argument('-ncpu','--n_cpu', help='Number of CPU', required=False, default=6, type=int)
@@ -195,7 +195,7 @@ if __name__ == "__main__":
 
 
     # check if corr_matrix is a file and exists
-    if w['corr_matrix'] != True:
+    if args['corr_matrix'] != True:
         print(f'*** Correlation matrix: {args["corr_matrix"]}')
 
         if Path(args['corr_matrix']).is_file():
