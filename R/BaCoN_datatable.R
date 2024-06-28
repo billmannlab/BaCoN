@@ -24,7 +24,7 @@ BaCoN_datatable <- function(input_matrix, cf = 0.05, .th = NA, verbose = T) {
   if (!is.na(.th)) {.i <- .d[, .I[abs(PCC) > (.mean + .th *.sd - cf)]]}
 
   if (verbose) {
-    message("miniBaCoN started... (", format(base::Sys.time(), "%X"), ").")
+    message("BaCoN_datatable started... (", format(base::Sys.time(), "%X"), ").")
   }
 
 
