@@ -33,9 +33,12 @@ BaCoN <- function(input_matrix, corr_f = 0.05,
 
   threshold <- ifelse(threshold == "none", 0, as.numeric(threshold))
 
-  if (!is.na(threshold)) {
+  if (threshold != 0) {
     threshold <- mean(input_matrix, na.rm = T) + threshold * stats::sd(input_matrix, na.rm = T)
-    }
+  }
+
+
+
 
   if (simulate) {
     message("BaCoN simulation complete.")
