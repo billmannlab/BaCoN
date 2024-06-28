@@ -1,10 +1,10 @@
-## ---- MiniBaCoN function ----
+## ---- BaCoN_datatable function ----
 
 #' @import data.table
-#' @export miniBaCoN
+#' @export BaCoN_datatable
 #' @returns A BaCoN-matrix of the input correlation matrix.
 
-miniBaCoN <- function(input_matrix, cf = 0.05, .th = NA, verbose = T) {
+BaCoN_datatable <- function(input_matrix, cf = 0.05, .th = NA, verbose = T) {
   .mean <- base::mean(input_matrix, na.rm = T)
   .sd <- stats::sd(input_matrix, na.rm = T)
 
