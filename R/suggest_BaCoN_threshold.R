@@ -1,7 +1,7 @@
 #' @importFrom stats sd
 #' @importFrom utils capture.output
 #' @export suggest_BaCoN_threshold
-#' @returns xxx
+#' @returns a function that suggests a threshold to compute BaCoN for high PCC values.
 
 suggest_BaCoN_threshold <- function(.matrix, verbose = T) {
 
