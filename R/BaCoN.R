@@ -61,9 +61,8 @@ BaCoN <- function(input_matrix, corr_f = 0.05,
                                        force = T,
                                        format = "[:bar] :percent (:timepoint), ETA: :eta")}
 
-    if (verbose) {message("Ready to run.")}
+    if (verbose) {message("Ready to run (", format(Sys.time(), "%X"), ").")}
     start_time <- Sys.time()
-    if (verbose) {message("BaCoN started (", format(Sys.time(), "%X"), ").")}
 
     vectorized_BaCoN <- \(vector, cf = corr_f) {
       out_vec <- rep(NA, base::length(vector))
