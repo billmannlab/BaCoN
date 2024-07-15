@@ -27,13 +27,15 @@ BaCoN <- function(input_matrix, corr_f = 0.05,
     }
 
   if (verbose) {
-    message(paste0("\nChosen threshold: ", threshold, ", chosen correction factor: ", corr_f, "."))
+    message(paste0("\nChosen threshold: ", threshold, ",
+                   chosen correction factor: ", corr_f, "."))
   }
 
   threshold <- ifelse(threshold == "none", 0, as.numeric(threshold))
 
   if (threshold != 0) {
-    threshold <- mean(input_matrix, na.rm = T) + threshold * stats::sd(input_matrix, na.rm = T)
+    threshold <- mean(input_matrix, na.rm = T) +
+      threshold * stats::sd(input_matrix, na.rm = T)
   }
 
 if (simulate) {
@@ -52,9 +54,10 @@ if (simulate) {
     }
 
     if (showProgress) {
-      pb <- progress::progress_bar$new(width = 75,
-                                       force = T,
-                                       format = "[:bar] :percent (:timepoint), ETA: :eta")}
+      pb <- progress::progress_bar$new(
+        width = 75,
+        force = T,
+        format = "[:bar] :percent (:timepoint), ETA: :eta")}
 
     if (verbose) {message("Ready to run (", format(Sys.time(), "%X"), ").")}
     start_time <- Sys.time()
@@ -62,7 +65,8 @@ if (simulate) {
     vectorized_BaCoN <- \(vector, cf = corr_f) {
       out_vec <- rep(NA, base::length(vector))
       i <- !is.na(vector)
-      out_vec[i] <- base::sapply(vector[i], \(.) {sum(vector > . - cf, na.rm = T)})
+      out_vec[i] <- base::sapply(vector[i], \(.) {
+        sum(vector > . - cf, na.rm = T)})
       out_vec}
 
     .in <- list(pos = input_matrix, neg = input_matrix)
