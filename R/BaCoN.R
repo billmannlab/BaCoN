@@ -36,16 +36,12 @@ BaCoN <- function(input_matrix, corr_f = 0.05,
     threshold <- mean(input_matrix, na.rm = T) + threshold * stats::sd(input_matrix, na.rm = T)
   }
 
-
-
-
-  if (simulate) {
+if (simulate) {
     message("BaCoN simulation complete.")
     return(NULL)
   }
 
   if (!simulate) {
-
     appl_func <- ifelse(n_cores > 1,
                         future.apply::future_apply,
                         base::apply)
