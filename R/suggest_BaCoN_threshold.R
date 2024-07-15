@@ -3,6 +3,8 @@
 #' @export suggest_BaCoN_threshold
 #' @returns a function that suggests a threshold to compute BaCoN for high PCC values.
 
+## ---- suggest_BaCoN_threshold function ----
+
 suggest_BaCoN_threshold <- function(.matrix, verbose = T) {
 
   .mean <- base::mean(.matrix, na.rm = T)

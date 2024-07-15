@@ -1,5 +1,3 @@
-## ---- BaCoN function ----
-
 #' @importFrom progress progress_bar
 #' @importFrom future.apply future_apply
 #' @importFrom future plan
@@ -9,6 +7,7 @@
 #' @export BaCoN
 #' @returns A BaCoN-matrix of the input correlation matrix.
 
+## ---- BaCoN function ----
 
 BaCoN <- function(input_matrix, corr_f = 0.05,
                   threshold = "none",

@@ -1,8 +1,8 @@
-## ---- BaCoN_datatable function ----
-
 #' @import data.table
 #' @export BaCoN_datatable
 #' @returns A BaCoN-matrix of the input correlation matrix.
+
+## ---- BaCoN_datatable function ----
 
 BaCoN_datatable <- function(input_matrix, cf = 0.05, .th = NA, verbose = T) {
   .mean <- base::mean(input_matrix, na.rm = T)
