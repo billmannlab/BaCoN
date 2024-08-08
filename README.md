@@ -36,9 +36,10 @@ bacon_matrix <- BaCoN(correlation_matrix)
 ```
 
 
+To cite this package, please refer to:
+- Rohde, T., Demirtas, Y., Shaw, A., Billmann, M. BaCoN (Balanced Correlation Network) improves prediction of gene buffering. DOI: [10.1101/2024.07.01.601598](https://doi.org/10.1101/2024.07.01.601598)
 
 
 The BaCoN routine was used in the following manuscripts:
 
-- Rohde, T., Demirtas, Y., Shaw, A., Billmann, M. BaCoN (Balanced Correlation Network) improves prediction of gene buffering. DOI: [10.1101/2024.07.01.601598](https://doi.org/10.1101/2024.07.01.601598)
 - Krieg, S., Rohde, T., Rausch, T. _et al._ Mitoferrin2 is a synthetic lethal target for chromosome 8p deleted cancers. _Genome Med_ **16**, 83 (2024). DOI: [10.1186/s13073-024-01357-w](https://doi.org/10.1186/s13073-024-01357-w)
