@@ -29,16 +29,43 @@ BaCoN_datatable <- function(input_matrix, cf = 0.05, .th = NA, verbose = T) {
   }
 
   .grpn <- data.table::uniqueN(.d[, gene1])
-  .d[.i, b1 := {cat("\r", round(.GRP/grpn*100, 2), "%"); baconize(PCC, cf)}, by = gene1]
 
-  message("\n")
+  # Initialize start time
+  .start_time <- Sys.time()
+
+  # Perform the operation with progress and time estimation
+  .d[.i, b1 := {
+    .current <- Sys.time()
+    .progress <- round(.GRP / .grpn * 100, 2) # Calculate the percentage of completion
+    .elapsed <- difftime(.current, .start_time, units = "secs") # Calculate the elapsed time
+    .estimated_total <- as.numeric(.elapsed) / (.GRP / .grpn) # Estimate total time based on the progress
+    .eta <- .estimated_total - as.numeric(.elapsed) # Calculate the estimated remaining time
+    cat("\r", .progress, "%. ETA: ", round(.eta, 0), " seconds", sep = "") # Print progress and estimated remaining time
+
+    baconize(PCC, cf)}, by = gene1]
+
+  cat("\r \r")
+
+  #.d[.i, b1 := {cat("\r", round(.GRP/grpn*100, 2), "%"); baconize(PCC, cf)}, by = gene1]
+
+
   if (verbose) {
     message("[", format(base::Sys.time(), "%X"), "] Entering phase 2/2...")
   }
 
   .grpn <- data.table::uniqueN(.d[, gene2])
-  .d[.i, b2 := {cat("\r",round(.GRP/grpn*100, 2), "%"); baconize(PCC, cf)}, by = gene2]
-  cat("\n")
+  .d[.i, b2 := {
+    .current <- Sys.time()
+    .progress <- round(.GRP / .grpn * 100, 2) # Calculate the percentage of completion
+    .elapsed <- difftime(.current, .start_time, units = "secs") # Calculate the elapsed time
+    .estimated_total <- as.numeric(.elapsed) / (.GRP / .grpn) # Estimate total time based on the progress
+    .eta <- .estimated_total - as.numeric(.elapsed) # Calculate the estimated remaining time
+    cat("\r", .progress, "%. ETA: ", round(.eta, 0), " seconds", sep = "") # Print progress and estimated remaining time
+
+
+    baconize(PCC, cf)}, by = gene2]
+
+  cat("\r \r")
 
   if (verbose) {
     message("[", format(base::Sys.time(), "%X"), "] Done.")
