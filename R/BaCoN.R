@@ -2,8 +2,8 @@
 #' @importFrom future.apply future_apply
 #' @importFrom future plan
 #' @importFrom future multisession
-
 #' @importFrom stats sd
+#'
 #' @export BaCoN
 #' @returns A BaCoN-matrix of the input correlation matrix.
 
