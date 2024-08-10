@@ -4,9 +4,8 @@ Buffering between genes is fundamental for robust cellular functions. While expe
 
 
 
-
-
 This will be the R package containing the functions required to compute a BaCoN matrix. 
+
 
 # Quickstart
 
@@ -35,7 +34,15 @@ library(BaCoN)
 bacon_matrix <- BaCoN(correlation_matrix)
 ```
 
+
+# Tutorial
+
+
+A vignette describing how to predict buffering gene pairs using `BaCoN` can be found [here](https://github.com/billmannlab/BaCoN/blob/main/vignettes/tutorial.pdf). 
+
+
 # Citation
+
 
 To cite this package, please refer to:
 - Rohde, T., Demirtas, Y., Shaw, A., Billmann, M. BaCoN (Balanced Correlation Network) improves prediction of gene buffering. DOI: [10.1101/2024.07.01.601598](https://doi.org/10.1101/2024.07.01.601598)

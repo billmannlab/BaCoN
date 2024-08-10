@@ -17,3 +17,7 @@ Imports:
     progress,
     stats,
     utils
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
