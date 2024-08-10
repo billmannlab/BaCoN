@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Thomas Rohde" />
+
+
+<title>BaCoN - Tutorial</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">BaCoN - Tutorial</h1>
+<h4 class="author">Thomas Rohde</h4>
+
+
+
+<p>This vignette describes how to predict functional buffering between
+gene pairs, using DepMap data.</p>
+<div id="install-bacon-package" class="section level2">
+<h2>Install BaCoN package</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(devtools)) {<span class="fu">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)}</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;billmannlab/BaCoN&quot;</span>)</span></code></pre></div>
+</div>
+<div id="import-packages" class="section level2">
+<h2>Import packages</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(BaCoN)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_light</span>())</span></code></pre></div>
+</div>
+<div id="data-preparation" class="section level2">
+<h2>Data preparation</h2>
+<p>This script depends on DepMap gene expression as well as Chronos
+scores from the <a href="https://depmap.org/portal/download/all/?releasename=DepMap+Public+23Q2">23Q2
+version</a>.</p>
+<p>Please download them manually and place the CSV files in the “data”
+directory.</p>
+<ul>
+<li>Chronos scores: “CRISPRGeneEffect.csv”</li>
+<li>Gene expression:
+“OmicsExpressionProteinCodingGenesTPMLogp1.csv”</li>
+</ul>
+</div>
+<div id="import-depmap-gene-expression-and-fitness-effect-data" class="section level2">
+<h2>Import DepMap gene expression and fitness effect data</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>import_depmap <span class="ot">&lt;-</span> \(filepath) {</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  object <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(data.table<span class="sc">::</span><span class="fu">fread</span>(filepath), <span class="at">rownames =</span> <span class="dv">1</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="fu">colnames</span>(object) <span class="ot">&lt;-</span> stringr<span class="sc">::</span><span class="fu">str_split_i</span>(<span class="fu">colnames</span>(object), <span class="st">&quot; </span><span class="sc">\\</span><span class="st">(&quot;</span>, <span class="dv">1</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">return</span>(object)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>}</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>gene_expression <span class="ot">&lt;-</span> <span class="fu">import_depmap</span>(</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  <span class="fu">file.path</span>(<span class="st">&quot;..&quot;</span>, <span class="st">&quot;data&quot;</span>, <span class="st">&quot;OmicsExpressionProteinCodingGenesTPMLogp1.csv&quot;</span>))</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>chronos <span class="ot">&lt;-</span> <span class="fu">import_depmap</span>(</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="fu">file.path</span>(<span class="st">&quot;..&quot;</span>, <span class="st">&quot;data&quot;</span>, <span class="st">&quot;CRISPRGeneEffect.csv&quot;</span>))</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="fu">message</span>(<span class="fu">str_c</span>(<span class="fu">round</span>(<span class="fu">sum</span>(<span class="fu">is.na</span>(chronos)) <span class="sc">/</span> <span class="fu">length</span>(chronos) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>), </span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>              <span class="st">&quot; percent of values are imputed.&quot;</span>))</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; 0.94 percent of values are imputed.</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co"># Impute missing Chronos scores as gene-wise means</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(chronos)) {</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>  chronos[,i][<span class="fu">is.na</span>(chronos[,i])] <span class="ot">&lt;-</span> <span class="fu">mean</span>(chronos[,i], <span class="at">na.rm =</span> T)</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="subset-expression-and-fitness-effect-matrix" class="section level2">
+<h2>Subset expression and fitness effect matrix</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>exp_th <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>chr_th <span class="ot">&lt;-</span> <span class="dv">1</span></span></code></pre></div>
+<p>The gene expression and the Chronos score matrix are subsetted to the
+cell lines that are represented in both datasets.</p>
+<p>Conceptually, we expect that buffering predictions require the
+buffering partner to be expressed in a sufficient number of cell lines
+and the knockout of the buffered partner to have a certain impact on
+cell fitness.</p>
+<p>We therefore apply filter criteria to reduce the gene space and
+remove genes with low signal.</p>
+<p>We restrict the gene space to genes that do not show an expression
+(log2 TPM+1) of <span class="math inline">\(\geq\)</span> 3 in at least
+1000 of the cell lines. Chronos genes were selected by a required
+essentiality level (1) shown in a minimum of 30 cell lines. This way,
+genes with low essentiality across most of the cell lines were
+removed.</p>
+<p>Note: To keep a low runtime, we apply very strict thresholds in this
+vignette. In a comprehensive analysis, it is strongly recommended to
+cover a larger fraction of the genome, by defining less strict
+thresholds.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#To correlate fitness effect with expression data, it is necessary to equalize cell lines.</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>intersecting_cell_lines <span class="ot">&lt;-</span> <span class="fu">intersect</span>(<span class="fu">rownames</span>(gene_expression), </span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>                                     <span class="fu">rownames</span>(chronos))</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>expression_genes <span class="ot">&lt;-</span> <span class="fu">names</span>(<span class="fu">which</span>(<span class="fu">apply</span>(</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  gene_expression[intersecting_cell_lines,] <span class="sc">&gt;=</span> <span class="dv">3</span>, </span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="dv">2</span>, sum, <span class="at">na.rm =</span> T) <span class="sc">&gt;=</span> exp_th))</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>chronos_genes <span class="ot">&lt;-</span> <span class="fu">names</span>(<span class="fu">which</span>(<span class="fu">apply</span>(</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="fu">abs</span>(chronos[intersecting_cell_lines,]) <span class="sc">&gt;</span> chr_th, <span class="dv">2</span>, sum) <span class="sc">&gt;=</span> <span class="dv">30</span>))</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>gene_expression_subset <span class="ot">&lt;-</span> gene_expression[intersecting_cell_lines,expression_genes]</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>chronos_subset <span class="ot">&lt;-</span> chronos[intersecting_cell_lines,chronos_genes]</span></code></pre></div>
+<p>The resulting universe is reduced to 3423 expression genes and 1787
+fitness genes.</p>
+</div>
+<div id="compute-pcc-correlation-matrix" class="section level2">
+<h2>Compute PCC correlation matrix:</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>pcc_matrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(gene_expression_subset, chronos_subset, </span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>                  <span class="at">use =</span> <span class="st">&quot;pairwise.complete.obs&quot;</span>)</span></code></pre></div>
+</div>
+<div id="compute-bacon-matrix" class="section level2">
+<h2>Compute BaCoN matrix:</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>bacon_matrix <span class="ot">&lt;-</span> <span class="fu">BaCoN</span>(pcc_matrix)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; Chosen threshold: none,</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt;                    chosen correction factor: 0.05.</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; Ready to run (19:08:11).</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; Completed after 1.89 minutes.</span></span></code></pre></div>
+</div>
+<div id="collect-top-100-predictions" class="section level2">
+<h2>Collect top 100 predictions:</h2>
+<p>We use the lowest BaCoN score of the top 100 predictions as cutoff.
+This can lead to more than 100 pairs in the prediction set, as
+BaCoN-scored pairs are tied.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>cutoff <span class="ot">&lt;-</span> <span class="fu">sort</span>(bacon_matrix, <span class="at">decreasing =</span> T)[<span class="dv">100</span>]</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">data.table</span>(<span class="fu">which</span>(bacon_matrix <span class="sc">&gt;=</span> cutoff, <span class="at">arr.ind =</span> T), </span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>                          <span class="at">BaCoN =</span> bacon_matrix[<span class="fu">which</span>(bacon_matrix <span class="sc">&gt;=</span> cutoff)], </span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>                          <span class="at">PCC =</span> pcc_matrix[<span class="fu">which</span>(bacon_matrix <span class="sc">&gt;=</span> cutoff)])</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>predictions[, <span class="st">`</span><span class="at">:=</span><span class="st">`</span>(<span class="at">expression_gene =</span> <span class="fu">rownames</span>(bacon_matrix)[row], </span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>                   <span class="at">fitness_gene =</span> <span class="fu">colnames</span>(bacon_matrix)[col])]</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> predictions[, </span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>                           .(expression_gene, fitness_gene, BaCoN, PCC)][</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>                             <span class="fu">order</span>(BaCoN, PCC, <span class="at">decreasing =</span> T)]</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>predictions</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt;      expression_gene fitness_gene     BaCoN       PCC</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt;               &lt;char&gt;       &lt;char&gt;     &lt;num&gt;     &lt;num&gt;</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt;   1:          DDX19B       DDX19A 0.9996161 0.4936106</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt;   2:          BCL2L1         MCL1 0.9996161 0.4783933</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt;   3:          SYNGR2       CHMP4B 0.9996161 0.4301568</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt;   4:          PPP2CB       PPP2CA 0.9996161 0.4203088</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt;   5:         TIMM17B      TIMM17A 0.9996161 0.4125872</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt;  ---                                                 </span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt; 105:           SAAL1       PTPN11 0.9982726 0.2625796</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt; 106:           UQCRH        HNF1B 0.9982726 0.2582083</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="co">#&gt; 107:         ATP5F1C        MCM10 0.9982726 0.2452835</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="co">#&gt; 108:            SQLE         BRD2 0.9982726 0.2142160</span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="co">#&gt; 109:         LAMTOR3         TBCA 0.9982726 0.1964991</span></span></code></pre></div>
+</div>
+<div id="show-score-distribution-and-predictions" class="section level2">
+<h2>Show score distribution and predictions</h2>
+<p><img src="data:image/png;base64,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" width="100%" /></p>
+</div>
+<div id="runtime" class="section level1">
+<h1>Runtime</h1>
+<p>On smaller correlation matrices (~ 5000 x 5000 genes), a BaCoN matrix
+can be computed in less than 5 minutes. However, in its current R
+implementation, the runtime of BaCoN scales exponentially in case of
+large matrices (&gt; 12000 x 12000), the function can have a runtime of
+many hours. There are ways to reduce this problem:</p>
+<div id="thresholding" class="section level2">
+<h2>1. Thresholding:</h2>
+<p>We observed that the top BaCoN predictions all showed an initial PCC
+z-score &gt; 2. By limiting the computation of BaCoN scores to this
+small fraction of pairs, we can drastically reduce runtime while keeping
+the predictions of interest. The function
+<code>suggest_BaCoN_threshold</code> identifies the z-score threshold
+that ensures that BaCoN scores are computed for the top 1% of PCC
+values:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">suggest_BaCoN_threshold</span>(pcc_matrix)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">#&gt; Possible thresholds:</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt;                       none     1    2    3</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt; numeric threshold        0  0.06 0.13 0.19</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; values to compute [%]  100 28.69 5.07 0.87</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; Suggesting threshold 2.</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; [1] &quot;2&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>thresholded_bacon_matrix <span class="ot">&lt;-</span> <span class="fu">BaCoN</span>(<span class="at">input_matrix =</span> pcc_matrix, <span class="at">threshold =</span> <span class="st">&quot;2&quot;</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt; Chosen threshold: 2,</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt;                    chosen correction factor: 0.05.</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; Ready to run (19:10:46).</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt; Completed after 0.26 minutes.</span></span></code></pre></div>
+<p>We can show that all BaCoN scores above the z-score threshold are
+equal to the ones we computed before:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="sc">!</span><span class="fu">all</span>(<span class="fu">is.na</span>(thresholded_bacon_matrix)) <span class="sc">&amp;</span> </span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="fu">cor</span>(<span class="fu">as.vector</span>(bacon_matrix), <span class="fu">as.vector</span>(thresholded_bacon_matrix), </span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>    <span class="at">use =</span> <span class="st">&quot;pairwise.complete.obs&quot;</span>) <span class="sc">==</span> <span class="dv">1</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+</div>
+<div id="parallelization" class="section level2">
+<h2>2. Parallelization</h2>
+<p>A second solution to reduce runtime is the parallelization of
+<code>BaCoN</code>. In its default implementation, the function relies
+on the <code>apply</code> function. When executed with multiple threads
+(<code>n_cores = ...</code>), the function instead executes
+<code>future_apply</code> from the <code>future.apply</code> package.
+Using this alternative, runtime can be reduced, especially when no
+threshold is set.</p>
+<p>However, a few caveats need to be mentioned:</p>
+<ul>
+<li>parallelization architectures in R are often OS-dependent, and at
+this point the parallelization was only tested on Windows machines</li>
+<li>when using multiple threads and large input matrices, RAM usage can
+scale drastically, which can cause the function to collapse</li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>bacon_mat_par <span class="ot">&lt;-</span> <span class="fu">BaCoN</span>(pcc_matrix, <span class="at">n_cores =</span> <span class="dv">8</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt; BaCoN is set up to run with 8 cores.</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt; Chosen threshold: none,</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt;                    chosen correction factor: 0.05.</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt; Ready to run (19:11:03).</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt; Completed after 0.97 minutes.</span></span></code></pre></div>
+</div>
+<div id="thresholding-and-parallelization-can-be-combined" class="section level2">
+<h2>3. Thresholding and parallelization can be combined:</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>thresholded_bacon_mat_par <span class="ot">&lt;-</span> <span class="fu">BaCoN</span>(pcc_matrix, <span class="at">threshold =</span> <span class="st">&quot;2&quot;</span>, <span class="at">n_cores =</span> <span class="dv">8</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt; BaCoN is set up to run with 8 cores.</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; Chosen threshold: 2,</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt;                    chosen correction factor: 0.05.</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; Ready to run (19:12:02).</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; Completed after 0.62 minutes.</span></span></code></pre></div>
+</div>
+</div>
+<div id="summary" class="section level1">
+<h1>Summary</h1>
+<p>We were able to compute <code>BaCoN</code> matrices smaller than 4000
+x 4000 genes in less than 10 minutes using one core of an AMD Ryzen 9
+5900X processor. Using 8 threads, matrices up to ~ 6500 x 6500 become
+feasible in under 10 minutes. However, the biggest runtime improvement
+is achieved by thresholding based on PCC z-scores. For a 12000 x 12000
+correlation matrix, most reliable results were achieved using
+<code>BaCoN</code> with 4-8 threads.</p>
+<div id="experimental-the-bacon_data.table-function" class="section level2">
+<h2>Experimental: The BaCoN_data.table function</h2>
+<p>The exponentially increasing runtime of <code>BaCoN</code> is due to
+the greater number of required computations, but also the handling of
+very large objects. The <code>data.table</code> environment is designed
+to optimize speed and RAM usage when dealing with large datasets. We are
+experimenting with a version of <code>BaCoN</code> that converts the
+input correlation matrix into a <code>data.table</code>. The function is
+designed to minimize runtime increase caused by data handling, as well
+as RAM usage. The runtime improvement on large matrices compared to the
+default <code>BaCoN</code> function remains to be tested.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>bacon_dt_matrix <span class="ot">&lt;-</span> <span class="fu">BaCoN_datatable</span>(pcc_matrix)</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co">#&gt; BaCoN_datatable started... (19:12:39).</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt; Halfway done... (19:13:06).</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt; Done. (19:13:57).</span></span></code></pre></div>
+<p>The output scores of <code>BaCoN</code> and
+<code>BaCoN_data.table</code> are equal:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">data.frame</span>(<span class="at">BaCoN =</span> <span class="fu">as.vector</span>(bacon_matrix), </span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>               <span class="at">BaCoN_parallelized =</span> <span class="fu">as.vector</span>(bacon_mat_par), </span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>               <span class="at">BaCoN_datatable =</span> <span class="fu">as.vector</span>(bacon_dt_matrix)))</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="co">#&gt;                    BaCoN BaCoN_parallelized BaCoN_datatable</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="co">#&gt; BaCoN                  1                  1               1</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co">#&gt; BaCoN_parallelized     1                  1               1</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt; BaCoN_datatable        1                  1               1</span></span></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
