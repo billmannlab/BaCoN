@@ -1,146 +1,95 @@
+#' @import data.table
 #' @importFrom progress progress_bar
-#' @importFrom future.apply future_apply
-#' @importFrom future plan
-#' @importFrom future multisession
-#' @importFrom stats sd
 #'
 #' @export BaCoN
 #' @returns A BaCoN-matrix of the input correlation matrix.
 
-## ---- BaCoN function ----
+BaCoN <- \(input_matrix,
+           cf = 0.05,
+           verbose = F,
+           show_progress = T,
+           n_threads = 1,
+           detailed_output = F) {
 
-BaCoN <- function(input_matrix, corr_f = 0.05,
-                  threshold = "none",
-                  #negative_th = "none",
-                  #parallel = F,
-                  n_cores = 1,
-                  verbose = T,
-                  showProgress = F,
-                  simulate = F) {
+  .pbformat <- "[:bar] :percent (:current/:total, :tick_rate), elapsed: :elapsedfull, ETA: :eta"
 
-  if (verbose & simulate) {
-    message("Simulating BaCoN run.")
+  setDTthreads(n_threads)
+
+  .genespace <- length(input_matrix)
+  .nrow <- nrow(input_matrix)
+  .ncol <- ncol(input_matrix)
+  .rownames <- rownames(input_matrix)
+  .colnames <- colnames(input_matrix)
+  .y <- .nrow + .ncol
+  .rowwise_progress <- rep(NA, .nrow)
+  .colwise_progress <- rep(NA, .ncol)
+
+  #  for (.n in names(.output)) {saveRDS(.output[[.n]], file.path(cache_fpath, str_c(.n, ".rds")))}
+
+  .data <- list(ID = seq_along(1:.genespace),
+                gene1 = rep(.rownames, .ncol),
+                gene2 = rep(.colnames, each = .nrow),
+                PCC = as.vector(input_matrix))
+
+
+  setDT(.data)
+
+  setkey(.data, gene1, physical = T)
+
+  if (show_progress) {.pb <- progress::progress_bar$new(format = .pbformat,
+                                                        total = .y,
+                                                        width = 75, force = T)}
+
+  .start <- base::Sys.time()
+  .data[, bacon_rowwise := {
+    if (detailed_output) {
+      .grp <- .GRP
+      .rowwise_progress[[.grp]] <<- difftime(Sys.time(), .start, units = "secs")
+    }
+    if (show_progress) {.pb$tick()}
+    baconize(PCC, cf)}, by = gene1]
+
+  setkey(.data, ID, physical = T)
+  setkey(.data, gene2, physical = T)
+
+  .start <- base::Sys.time()
+  .data[, bacon_colwise := {
+    if (detailed_output) {
+      .grp <- .GRP
+      .colwise_progress[[.grp]] <<- difftime(Sys.time(), .start, units = "secs")
+    }
+    if (show_progress) {.pb$tick()}
+    baconize(PCC, cf)
+  }, by = gene2]
+
+  setkey(.data, ID, physical = T)
+
+  ###
+  if(!all(.data[, ID] == seq_along(1:length(input_matrix)))) {
+    warning("Check order of the elements!")
   }
+  ###
 
-  if (verbose & n_cores > 1) {
-    message(paste0("BaCoN is set up to run with ", n_cores, " cores."))
-    }
+  .data[, BaCoN := data.table::fcase(PCC >= 0, 1 - (bacon_rowwise + bacon_colwise) / .y,
+                                     PCC < 0, -1 + (bacon_rowwise + bacon_colwise) / .y)]
 
-  if (verbose) {
-    message(paste0("\nChosen threshold: ", threshold, ",
-                   chosen correction factor: ", corr_f, "."))
-  }
+  .matrix <- base::array(data = .data[, get("BaCoN")],
+                         dim = c(.nrow, .ncol),
+                         dimnames = list(.rownames, .colnames))
 
-  threshold <- ifelse(threshold == "none", 0, as.numeric(threshold))
+  if (detailed_output) {
+    return(list(correlation_matrix = input_matrix,
+                correction_factor = cf,
+                genespace = .genespace,
+                nrow = .nrow,
+                ncol = .ncol,
+                rownames = .rownames,
+                colnames = .colnames,
+                rowwise_progress = .rowwise_progress,
+                colwise_progress = .colwise_progress,
+                data = .data,
+                bacon_matrix = .matrix))
+  } else {
+    return(.matrix)
 
-  if (threshold != 0) {
-    threshold <- mean(input_matrix, na.rm = T) +
-      threshold * stats::sd(input_matrix, na.rm = T)
-  }
-
-if (simulate) {
-    message("BaCoN simulation complete.")
-    return(NULL)
-  }
-
-  if (!simulate) {
-    appl_func <- ifelse(n_cores > 1,
-                        future.apply::future_apply,
-                        base::apply)
-
-    if (n_cores > 1) {
-      options(future.globals.maxSize = +Inf) # 1000*1024^2
-      future::plan(future::multisession, workers = n_cores)
-    }
-
-    if (showProgress) {
-      pb <- progress::progress_bar$new(
-        width = 75,
-        force = T,
-        format = "[:bar] :percent (:timepoint), ETA: :eta")}
-
-    if (verbose) {message("Ready to run (", format(Sys.time(), "%X"), ").")}
-    start_time <- Sys.time()
-
-    vectorized_BaCoN <- \(vector, cf = corr_f) {
-      out_vec <- rep(NA, base::length(vector))
-      i <- !is.na(vector)
-      out_vec[i] <- base::sapply(vector[i], \(.) {
-        sum(vector > . - cf, na.rm = T)})
-      out_vec}
-
-    .in <- list(pos = input_matrix, neg = input_matrix)
-    .in$pos[input_matrix < max(threshold - corr_f, -corr_f, na.rm = T)] <- NA
-    .in$neg[input_matrix >= min(-threshold + corr_f, corr_f, na.rm = T)] <- NA
-
-    .out <- list(main = array(NA, dim = dim(input_matrix),
-                              dimnames = dimnames(input_matrix)))
-    .out$pos$h <- .out$main; .out$pos$v <- .out$main
-    .out$neg$h <- .out$main; .out$neg$v <- .out$main
-
-    if (showProgress) {
-      pb$update(0.05,
-                tokens = list(timepoint = format(Sys.time(), "%X")))
-    }
-
-    roi <- which(rowSums(!is.na(.in$pos)) > 1)
-    .out$pos$h[roi,] <- t(appl_func(.in$pos[roi,], 1, vectorized_BaCoN))
-
-    if (showProgress) {
-      pb$update(0.25,
-                tokens = list(timepoint = format(Sys.time(), "%X")))
-    }
-
-    coi <- which(base::colSums(!is.na(.in$pos)) > 1)
-    .out$pos$v[,coi] <- appl_func(.in$pos[,coi], 2, vectorized_BaCoN)
-
-
-    vectorized_BaCoN <- \(vector, cf = corr_f) {
-      out_vec <- rep(NA, base::length(vector))
-      i <- !is.na(vector)
-      out_vec[i] <- sapply(vector[i], \(.) {sum(vector < . + cf, na.rm = T)})
-      out_vec}
-
-    .out$pos$merge <- (.out$pos$v + .out$pos$h)
-
-    if (showProgress) {
-      pb$update(0.5, tokens = list(timepoint = format(Sys.time(), "%X")))
-      }
-
-    roi <- which(rowSums(!is.na(.in$neg)) > 1)
-    .out$neg$h[roi,] <- t(appl_func(.in$neg[roi,], 1, vectorized_BaCoN))
-
-    if (showProgress) {
-      pb$update(0.75, tokens = list(timepoint = format(Sys.time(), "%X")))
-      }
-
-    coi <- which(colSums(!is.na(.in$neg)) > 1)
-    .out$neg$v[,coi] <- appl_func(.in$neg[,coi], 2, vectorized_BaCoN)
-
-    .out$neg$merge <- (.out$neg$v + .out$neg$h)
-
-    y <- sum(dim(input_matrix))
-
-    i_pos <- which(!is.na(.in$pos) & input_matrix >= threshold)
-    .out$main[i_pos] <- 1 - (.out$pos$merge[i_pos] / y)
-
-    i_neg <- which(!is.na(.in$neg) & input_matrix < -threshold)
-
-    if (!base::length(base::intersect(i_pos, i_neg)) == 0) {
-      print(base::intersect(i_pos, i_neg))
-    }
-
-    .out$main[i_neg] <- - 1 + (.out$neg$merge[i_neg] / y)
-
-    if (showProgress) {
-      pb$finished
-    }
-
-    if (verbose) {
-      message(paste0("\nCompleted after ",
-                     round(difftime(base::Sys.time(),
-                                    start_time,
-                                    units = "min"), 2), " minutes."))}
-    return(.out$main)
-  }
-}
+  }}
