@@ -4,9 +4,11 @@
 #' @export BaCoN
 #' @returns A BaCoN-matrix of the input correlation matrix.
 
+## ---- BaCoN function ----
+
 BaCoN <- \(input_matrix,
            cf = 0.05,
-           verbose = F,
+           verbose = T,
            show_progress = T,
            n_threads = 1,
            detailed_output = F) {
@@ -36,8 +38,9 @@ BaCoN <- \(input_matrix,
 
   setkey(.data, gene1, physical = T)
 
+  if (verbose) {message("Entering phase 1/2 (rowwise computation)...")}
   if (show_progress) {.pb <- progress::progress_bar$new(format = .pbformat,
-                                                        total = .y,
+                                                        total = .nrow,
                                                         width = 75, force = T)}
 
   .start <- base::Sys.time()
@@ -51,6 +54,11 @@ BaCoN <- \(input_matrix,
 
   setkey(.data, ID, physical = T)
   setkey(.data, gene2, physical = T)
+
+  if (verbose) {message("Entering phase 2/2 (columnwise computation)...")}
+  if (show_progress) {.pb <- progress::progress_bar$new(format = .pbformat,
+                                                        total = .ncol,
+                                                        width = 75, force = T)}
 
   .start <- base::Sys.time()
   .data[, bacon_colwise := {
