@@ -2,7 +2,7 @@
 title: "BaCoN - Tutorial"
 author: "Thomas Rohde"
 date: "Feb 22, 2025"
-output: html_document
+output: pdf_document
 ---
 
 This vignette describes how to predict functional buffering between gene pairs using `BaCoN`, using data from the Cancer Dependency Map (DepMap). 
