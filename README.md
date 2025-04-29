@@ -34,19 +34,23 @@ library(BaCoN)
 bacon_matrix <- BaCoN(correlation_matrix)
 ```
 
+NOTE: 
+
+In our manuscript, we suggest to combine `BaCoN` with [Cholesky whitening](https://doi.org/10.1080/00031305.2016.1277159) 
+to achieve better results. 
+
+Please refer to the [vignette](https://github.com/billmannlab/BaCoN/blob/main/vignettes/tutorial.pdf) for a tutorial. 
 
 # Tutorial
 
-
 A vignette describing how to predict buffering gene pairs using `BaCoN` can be found [here](https://github.com/billmannlab/BaCoN/blob/main/vignettes/tutorial.pdf). 
-
 
 # Citation
 
-
 To cite this package, please refer to:
-- Rohde, T., Demirtas, Y., Shaw, A., Billmann, M. BaCoN (Balanced Correlation Network) improves prediction of gene buffering. DOI: [10.1101/2024.07.01.601598](https://doi.org/10.1101/2024.07.01.601598)
 
-The BaCoN routine was used in the following manuscripts:
+- Rohde, T., Demirtas, Y., Süsser, S., Shaw, A., Kaulich, M., Billmann, M. BaCoN (Balanced Correlation Network) improves prediction of gene buffering. _Molecular Systems Biology_, (2025). DOI: [10.1038/s44320-025-00103-7](https://doi.org/10.1038/s44320-025-00103-7)
+
+The `BaCoN` routine was used in the following manuscripts:
 
 - Krieg, S., Rohde, T., Rausch, T. _et al._ Mitoferrin2 is a synthetic lethal target for chromosome 8p deleted cancers. _Genome Med_ **16**, 83 (2024). DOI: [10.1186/s13073-024-01357-w](https://doi.org/10.1186/s13073-024-01357-w)

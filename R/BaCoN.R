@@ -26,8 +26,6 @@ BaCoN <- \(input_matrix,
   .rowwise_progress <- rep(NA, .nrow)
   .colwise_progress <- rep(NA, .ncol)
 
-  #  for (.n in names(.output)) {saveRDS(.output[[.n]], file.path(cache_fpath, str_c(.n, ".rds")))}
-
   .data <- list(ID = seq_along(1:.genespace),
                 gene1 = rep(.rownames, .ncol),
                 gene2 = rep(.colnames, each = .nrow),

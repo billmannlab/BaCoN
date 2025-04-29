@@ -1,7 +1,7 @@
 ---
 title: "BaCoN - Tutorial"
 author: "Thomas Rohde"
-date: "Feb 22, 2025"
+date: "April 29, 2025"
 output: pdf_document
 ---
 
@@ -38,8 +38,8 @@ if (F) {devtools::install_github("billmannlab/BaCoN", force = T)}
 library(BaCoN)
 library(data.table)
 library(stringr)
-library(tidyverse)
-theme_set(theme_light())
+library(magrittr)
+
 
 ```
 
@@ -69,7 +69,7 @@ ge_complete <- import_depmap(
 chronos_complete <- import_depmap(
   file.path("..", "data", "CRISPRGeneEffect.csv"))
 
-message(str_c(round(sum(is.na(chronos_complete)) / 
+message(paste0(round(sum(is.na(chronos_complete)) / 
                       length(chronos_complete) * 100, 2), 
               " percent of values are imputed."))
 
@@ -105,9 +105,7 @@ Conceptually, we expect that biologically meaningful buffering predictions requi
 This is only one possible strategy. In contrast to correlation scores, BaCoN scores are compared with and thus influenced by all other gene partners of the respective pair. It is recommended to experiment with different matrix sizes. 
 
 To keep runtimes low, we apply very strict thresholds in this vignette. 
-In a comprehensive analysis, it is strongly recommended to cover a larger fraction of the genome, by defining less strict thresholds. 
-
-Matrix sizes of ~ 6000-16000 genes on each side of the matrix showed good results in our experiments. The cell lines should be kept at a high number
+In a comprehensive analysis, it is strongly recommended to cover a larger fraction of the genome, by defining less strict thresholds (e.g. between 0.25 - 1). Matrix sizes of ~ 6000-16000 buffering as well as roughly the same number of buffered genes showed good results in our analyses. The cell lines should be kept at as high as possible. 
 
 
 ```{r}
@@ -123,12 +121,7 @@ chronos_subset <- chronos_subset[,chronos_genes]
 ```
 
 
-```{r}
-dim(ge_subset)
-str(ge_subset)
-dim(chronos_subset)
-str(chronos_subset)
-```
+
 
 The resulting universe is reduced to `r ncol(ge_subset)` expression genes and `r ncol(chronos_subset)` fitness genes. 
 
@@ -140,20 +133,21 @@ prediction_matrices <- array(
                   colnames(chronos_subset), 
                   c("PCC", "BaCoN", "Cholesky_PCC", "Cholesky_BaCoN")))
 
-str(prediction_matrices)
+
 ```
 
 ## 3.1 Compute PCC correlation matrix:
 
 ```{r compute correlation matrix}
-prediction_matrices[,,"PCC"] <- cor(ge_subset, chronos_subset, 
+prediction_matrices[,,"PCC"] <- cor(ge_subset, 
+                                    chronos_subset, 
                                     use = "pairwise.complete.obs")
 ```
 
 ## 3.2 Compute BaCoN matrix:
 
 
-BaCoN may behave unexpectedly if the input correlation matrix is formatted in an unexpected way. 
+`BaCoN` may behave unexpectedly if the input correlation matrix is formatted in an unexpected way. 
 To ensure stable and reliable results, please ensure that the input matrix...
 
 1. is a correlation matrix or composed of comparable values scaling between -1 and 1. BaCoN is currently not designed to work e.g. on negative logarithmic p-values or other association indices. 
@@ -166,22 +160,18 @@ To ensure stable and reliable results, please ensure that the input matrix...
 prediction_matrices[,,"BaCoN"] <- BaCoN(prediction_matrices[,,"PCC"])
 ```
 
-
-
-
 ## 4. Cholesky whitening + PCC + BaCoN
 
-Next, we combine `BaCoN` with the pre-hoc covariance normalization method Cholesky whitening, as proposed in our manuscript. 
-We use the `whitening` package and its `whiten` function. 
+`BaCoN` alone creates a buffering prediction matrix that can be used, but we observed that combining `BaCoN` with pre-hoc covariance normalization methods further increases the quality of predictions (less false positives, higher number of paralogs). Next, we combine `BaCoN` with the pre-hoc covariance normalization method Cholesky whitening, as proposed in our manuscript. 
 
+We use the `whitening` package and its `whiten` function. 
 
 ```{r}
 if (F) {install.packages(whitening)}
 library(whitening)
 ```
 
-We whiten both input matrices independently. It is important that the cell lines of both objects are identical and in the "columns" dimensions of the object. Therefore, we transpose the objects before and retranspose them after the whitening. 
-
+We whiten both input matrices independently. It is important that the cell lines of both objects are identical and in the second dimension (columns) of the object. Therefore, we transpose the objects before and retranspose them after the whitening. 
 
 ```{r, message=FALSE}
 whitened_ge_subset <- t(whiten(t(ge_subset), method = "Cholesky"))
@@ -189,17 +179,18 @@ whitened_chronos_subset <- t(whiten(t(chronos_subset), method = "Cholesky"))
 
 prediction_matrices[,,"Cholesky_PCC"] <- cor(
   whitened_ge_subset, 
-  whitened_chronos_subset, use = "pairwise.complete.obs")
+  whitened_chronos_subset, 
+  use = "pairwise.complete.obs")
 
 prediction_matrices[,,"Cholesky_BaCoN"] <- BaCoN(prediction_matrices[,,"Cholesky_PCC"])
 
 ```
 
 
-## 5. Collect top 100 predictions:
+## 5. Collect top 1000 predictions:
 
-We use the lowest BaCoN score of the top 100 predictions as cutoff. The high density of paralog pairs is clearly visible. 
-This can lead to more than 100 pairs in the prediction set, as the top BaCoN-scored pairs are often tied. We use the PCC score to deal with the tied pairs. 
+We use the lowest BaCoN score of the top 1000 predictions as cutoff. The high density of paralog pairs is clearly visible. 
+This can lead to more than 1000 pairs in the prediction set, as the top BaCoN-scored pairs are often tied. We use the PCC score to deal with the tied pairs. 
 
 ```{r collect predictions}
 predictions <- data.table(data.frame(
@@ -207,20 +198,20 @@ predictions <- data.table(data.frame(
                         ncol(prediction_matrices)), 
   chronos_gene = rep(colnames(prediction_matrices), 
                      each = nrow(prediction_matrices)), 
-  sapply(dimnames(prediction_matrices)[[3]], 
-         \(.) as.vector(prediction_matrices[,,.]), simplify = F)))
+    PCC = as.vector(prediction_matrices[,,"PCC"]), 
+  BaCoN = as.vector(prediction_matrices[,,"BaCoN"]), 
+  Cholesky_PCC = as.vector(prediction_matrices[,,"Cholesky_PCC"]), 
+  Cholesky_BaCoN = as.vector(prediction_matrices[,,"Cholesky_BaCoN"])
+  )
+  )
+
 
 predictions[order(BaCoN, PCC, decreasing = T), BaCoN_rank := .I]
-predictions[order(Cholesky_BaCoN, Cholesky_PCC, decreasing = T), Cholesky_rank := .I]
+predictions[order(Cholesky_BaCoN, PCC, decreasing = T), Cholesky_BaCoN_rank := .I]
 
-predictions <- predictions[order(BaCoN, PCC, decreasing = T)]
+predictions <- predictions[order(Cholesky_BaCoN_rank, decreasing = F)]
 
-str(predictions)
-```
-
-
-```{r}
-predictions[1:25, .(expression_gene, chronos_gene, PCC, BaCoN, Cholesky_BaCoN)]
+predictions[1:25, .(expression_gene, chronos_gene, PCC, Cholesky_BaCoN)]
 ```
 
 
@@ -228,7 +219,10 @@ predictions[1:25, .(expression_gene, chronos_gene, PCC, BaCoN, Cholesky_BaCoN)]
 
 ## 6. Show score distribution and predictions
 
-```{r scatter plot, echo=FALSE, out.width="100%"}
+```{r scatter plot, echo=FALSE, out.width="100%", warning=FALSE}
+
+library(ggplot2); theme_set(theme_light())
+
 get_density <- \(x, y, ...) {
   dens <- MASS::kde2d(x, y, ...)
   ix <- findInterval(x, dens$x)
@@ -254,20 +248,20 @@ ggplot(plot_data, aes(PCC, BaCoN)) +
   geom_point(data = predictions[BaCoN_rank <= 100], color = "seagreen") + 
   scale_x_continuous(limits = c(-0.6, 0.6)) + 
   labs(title = "BaCoN vs PCC scores", 
-       subtitle = str_c("Heatscatter plots of BaCoN ~ PCC coordinates of gene pairs.\n", 
+       subtitle = paste0("Heatscatter plots of BaCoN ~ PCC coordinates of gene pairs.\n", 
                         "Gene pars with the top 100 BaCoN scores are colored green.")) + 
   theme(legend.position = "bottom")
 
 
-ggplot(plot_data, aes(Cholesky_PCC, Cholesky_BaCoN)) + 
+ggplot(plot_data, aes(PCC, Cholesky_BaCoN)) + 
   geom_hline(yintercept = 0) + 
   geom_vline(xintercept = 0) + 
   geom_point(aes(color = cholesky_density), shape = ".") + 
   scale_color_gradientn(colours = c("grey", "navy", "red", "yellow")) + 
-  geom_point(data = predictions[Cholesky_rank <= 100], color = "seagreen") + 
+  geom_point(data = predictions[Cholesky_BaCoN_rank <= 100], color = "seagreen") + 
   scale_x_continuous(limits = c(-0.6, 0.6)) + 
-  labs(title = "BaCoN vs PCC scores", 
-       subtitle = str_c("Heatscatter plots of Cholesky+BaCoN ~ Cholesky+PCC coordinates of gene pairs.\n", 
+  labs(title = "Cholesky + BaCoN vs PCC scores", 
+       subtitle = paste0("Heatscatter plots of Cholesky+BaCoN ~ PCC coordinates of gene pairs.\n", 
                         "Gene pars with the top 100 Cholesky+BaCoN scores are colored green.")) + 
   theme(legend.position = "bottom")
 
@@ -276,11 +270,36 @@ ggplot(plot_data, aes(Cholesky_PCC, Cholesky_BaCoN)) +
 
 # Summary
 
-The exponentially increasing runtime of `BaCoN` is due to the greater number of required computations, 
-but also the handling of very large objects. 
-The `data.table` environment is designed to optimize speed and RAM usage when dealing with large datasets. 
-The function is designed to minimize runtime increase caused by data handling, as well as RAM usage. 
+```{r}
+str(ge_complete)
 
-Future versions of `BaCoN` might offer further runtime improvements. 
+str(chronos_complete)
+
+str(ge_subset)
+
+str(chronos_subset)
+
+str(prediction_matrices)
+
+str(predictions)
+
+```
+
+# Sessioninfo
+
+```{r}
+sessionInfo()
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
