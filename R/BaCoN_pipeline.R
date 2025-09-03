@@ -1,7 +1,3 @@
-#' @import data.table
-#' @import job
-#' @importFrom progress progress_bar
-#' @importFrom stats cor
 
 #' @export BaCoN_pipeline
 #' @returns A convenience wrapper that first computes a correlation matrix
@@ -37,15 +33,15 @@ BaCoN_pipeline <- \(expression_matrix,
   }
 
   if (verbose) {
-    message(base::paste0("Correlation method: ",
+    message(paste0("Correlation method: ",
                          cor_method, ". ", length(.cl_intersect), " cell lines."))
-    message(base::paste0("Matrix dimensions: ",
+    message(paste0("Matrix dimensions: ",
                          .nrow, " x ", .ncol, " -> ", .genespace, " gene pairs."))
   }
 
   if (!is.na(cache_path)) {
-    if (!base::dir.exists(cache_path)) {
-      base::dir.create(cache_path, recursive = T, showWarnings = F)}
+    if (!dir.exists(cache_path)) {
+      dir.create(cache_path, recursive = T, showWarnings = F)}
   }
 
   .cormat_file <- file.path(cache_path, "correlation_matrix.rds")
@@ -88,7 +84,7 @@ BaCoN_pipeline <- \(expression_matrix,
                     "bacon_correction_factor", "cache_path",
                     "verbose", "show_progress"),
       packages = c("data.table", "progress"),
-      title = base::paste0("BaCoN (", basename(cache_path), ")"))
+      title = paste0("BaCoN (", basename(cache_path), ")"))
 
       # if the bacon matrix has not been computed yet, return NULL instead.
       .bacon <- list(bacon_matrix = NULL)

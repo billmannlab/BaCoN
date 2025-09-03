@@ -1,6 +1,17 @@
-baconize <- \(.vec, .cf) {
-  .out <- base::rep(NA, base::length(.vec))
+
+#baconize <- function(.vec, .cf) {
+#  .out <- rep(NA, length(.vec))
+#  i <- .vec >= 0 & !is.na(.vec)
+#  .out[i] <- sapply(.vec[i], \(x) sum(.vec > x - .cf, na.rm = T), simplify = T)
+#  if (sum(!i) > 0) {.out[!i] <- sapply(.vec[!i], \(x) sum(.vec < x + .cf, na.rm = T), simplify = T)}
+#  .out}
+
+
+baconize <- function(.vec, .cf) {
+  .out <- rep(NA, length(.vec))
   i <- .vec >= 0 & !is.na(.vec)
-  .out[i] <- base::sapply(.vec[i], \(x) base::sum(.vec > x - .cf, na.rm = T), simplify = T)
-  if (base::sum(!i) > 0) {.out[!i] <- base::sapply(.vec[!i], \(x) base::sum(.vec < x + .cf, na.rm = T), simplify = T)}
+  .out[i] <- purrr::map_int(.vec[i], ~ sum(.vec > .x - .cf, na.rm = T))
+  if (sum(!i) > 0) {
+    .out[!i] <- purrr::map_int(.vec[!i], ~ sum(.vec < .x + .cf, na.rm = T))}
   .out}
+

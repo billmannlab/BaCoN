@@ -1,6 +1,3 @@
-#' @import data.table
-#' @importFrom progress progress_bar
-#'
 #' @export BaCoN
 #' @returns A BaCoN-matrix of the input correlation matrix.
 
@@ -15,7 +12,7 @@ BaCoN <- \(input_matrix,
 
   .pbformat <- "[:bar] :percent (:current/:total, :tick_rate), elapsed: :elapsedfull, ETA: :eta"
 
-  setDTthreads(n_threads)
+  data.table::setDTthreads(n_threads)
 
   .genespace <- length(input_matrix)
   .nrow <- nrow(input_matrix)
@@ -32,16 +29,16 @@ BaCoN <- \(input_matrix,
                 PCC = as.vector(input_matrix))
 
 
-  setDT(.data)
+  data.table::setDT(.data)
 
-  setkey(.data, gene1, physical = T)
+  data.table::setkey(.data, gene1, physical = T)
 
   if (verbose) {message("Entering phase 1/2 (rowwise computation)...")}
   if (show_progress) {.pb <- progress::progress_bar$new(format = .pbformat,
                                                         total = .nrow,
                                                         width = 75, force = T)}
 
-  .start <- base::Sys.time()
+  .start <- Sys.time()
   .data[, bacon_rowwise := {
     if (detailed_output) {
       .grp <- .GRP
@@ -50,15 +47,15 @@ BaCoN <- \(input_matrix,
     if (show_progress) {.pb$tick()}
     baconize(PCC, cf)}, by = gene1]
 
-  setkey(.data, ID, physical = T)
-  setkey(.data, gene2, physical = T)
+  data.table::setkey(.data, ID, physical = T)
+  data.table::setkey(.data, gene2, physical = T)
 
   if (verbose) {message("Entering phase 2/2 (columnwise computation)...")}
   if (show_progress) {.pb <- progress::progress_bar$new(format = .pbformat,
                                                         total = .ncol,
                                                         width = 75, force = T)}
 
-  .start <- base::Sys.time()
+  .start <- Sys.time()
   .data[, bacon_colwise := {
     if (detailed_output) {
       .grp <- .GRP
@@ -68,7 +65,7 @@ BaCoN <- \(input_matrix,
     baconize(PCC, cf)
   }, by = gene2]
 
-  setkey(.data, ID, physical = T)
+  data.table::setkey(.data, ID, physical = T)
 
   ###
   if(!all(.data[, ID] == seq_along(1:length(input_matrix)))) {
@@ -79,7 +76,7 @@ BaCoN <- \(input_matrix,
   .data[, BaCoN := data.table::fcase(PCC >= 0, 1 - (bacon_rowwise + bacon_colwise) / .y,
                                      PCC < 0, -1 + (bacon_rowwise + bacon_colwise) / .y)]
 
-  .matrix <- base::array(data = .data[, get("BaCoN")],
+  .matrix <- array(data = .data[, get("BaCoN")],
                          dim = c(.nrow, .ncol),
                          dimnames = list(.rownames, .colnames))
 
