@@ -16,11 +16,11 @@ BaCoN_v2 <- function(
 
   .attr$y <- .attr$nrow + .attr$ncol
 
-  output <- imap(set_names(c("rowwise", "colwise", "merged")),
+  output <- purrr::imap(purrr::set_names(c("rowwise", "colwise", "merged")),
                  ~ array(dim = dim(input_matrix), dimnames = dimnames(input_matrix)))
 
-  walk(rownames(input_matrix), ~ {output$rowwise[.x,] <<- baconize(input_matrix[.x,], .cf = cf)}, .progress = ifelse(verbose, "Rowwise (1/2)...", F))
-  walk(colnames(input_matrix), ~ {output$colwise[,.x] <<- baconize(input_matrix[,.x], .cf = cf)}, .progress = ifelse(verbose, "Column-wise (2/2)...", F))
+  purrr::walk(rownames(input_matrix), ~ {output$rowwise[.x,] <<- baconize(input_matrix[.x,], .cf = cf)}, .progress = ifelse(verbose, "Rowwise (1/2)...", F))
+  purrr::walk(colnames(input_matrix), ~ {output$colwise[,.x] <<- baconize(input_matrix[,.x], .cf = cf)}, .progress = ifelse(verbose, "Column-wise (2/2)...", F))
 
   .i <- !is.na(input_matrix) & input_matrix >= 0
   output$merged[.i] <- 1 - (output$rowwise[.i] + output$colwise[.i]) / .attr$y
