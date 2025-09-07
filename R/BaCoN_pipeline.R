@@ -14,9 +14,7 @@ BaCoN_pipeline <- function(expression_matrix,
                            bacon_correction_factor = 0.05,
                            pairs_to_remove = NULL,
                            cache_file_suffix = "no_proximity_pairs_1e7_bp",
-                           steps = c("cor", "BaCoN", "cor_proxim", "BaCoN_proxim"),
                            verbose = T) {
-
 
   stopifnot("Cache file path required" = !missing(cache_path))
 
@@ -125,7 +123,8 @@ BaCoN_pipeline <- function(expression_matrix,
     }, import = c("BaCoN_v2", "baconize", "sort_gene_pairs",
                   "effect_matrix", "expression_matrix",
                   ".files",
-                  "pairs_to_remove", "bacon_correction_factor", "cor_method", "verbose", "cache_path"),
+                  "pairs_to_remove",
+                  "bacon_correction_factor", "cor_method", "verbose", "cache_path"),
     packages = c("data.table"),
     title = stringr::str_glue("BaCoN ({basename(cache_path)})")
     )
@@ -137,7 +136,7 @@ BaCoN_pipeline <- function(expression_matrix,
     if (is.null(pairs_to_remove)) {
       output <- purrr::set_names(output, c("cor", "BaCoN"))
     } else {
-        output <- purrr::set_names(output, c("cor", "BaCoN", "cor_no_neighbors", "BaCoN_no_neighbors"))
+      output <- purrr::set_names(output, c("cor", "BaCoN", "cor_no_neighbors", "BaCoN_no_neighbors"))
     }
 
     output <- purrr::map(output, readRDS) |> abind::abind(along = 3)

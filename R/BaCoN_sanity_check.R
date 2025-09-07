@@ -1,3 +1,4 @@
+#' @import data.table
 #' @export BaCoN_sanity_check
 
 BaCoN_sanity_check <- function(cormat, bacon_mat, cf = 0.05, n = 1000) {

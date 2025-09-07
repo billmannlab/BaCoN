@@ -1,3 +1,4 @@
+#' @import data.table
 #' @export BaCoN
 #' @returns A BaCoN-matrix of the input correlation matrix.
 
