@@ -14,6 +14,7 @@ BaCoN_pipeline <- function(expression_matrix,
                            bacon_correction_factor = 0.05,
                            pairs_to_remove = NULL,
                            cache_file_suffix = "no_proximity_pairs_1e7_bp",
+                           record_runtime = F,
                            verbose = T) {
 
   stopifnot("Cache file path required" = !missing(cache_path))
@@ -36,10 +37,10 @@ BaCoN_pipeline <- function(expression_matrix,
       all(rownames(effect_matrix) == .attr$intersecting_cell_lines))
   )
 
-  if (verbose) {
-    message(stringr::str_glue("Correlation method: {cor_method}. {length(.attr$intersecting_cell_lines)} cell lines."))
-    message(stringr::str_glue("Matrix dimensions: {.attr$nrow} x {.attr$ncol} -> {.attr$genespace} gene pairs."))
-  }
+  #if (verbose) {
+  #  message(stringr::str_glue("Correlation method: {cor_method}. {length(.attr$intersecting_cell_lines)} cell lines."))
+  #  message(stringr::str_glue("Matrix dimensions: {.attr$nrow} x {.attr$ncol} -> {.attr$genespace} gene pairs."))
+  #}
 
   .files <- c(cormat = "correlation_matrix", bacon = "bacon_matrix")
 
@@ -94,10 +95,14 @@ BaCoN_pipeline <- function(expression_matrix,
         .bacon <- list(bacon_matrix = readRDS(.files[["bacon"]]))
       } else {
         if (verbose) {message("Computing BaCoN matrix...")}
-        .bacon <- BaCoN_v2(input_matrix = .cormat,
+
+        if (record_runtime) {saveRDS(Sys.time(), file.path(cache_path, "start_time.rds"))}
+
+        .bacon <- BaCoN(input_matrix = .cormat,
                            cf = bacon_correction_factor,
                            verbose = verbose)
 
+        if (record_runtime) {saveRDS(Sys.time(), file.path(cache_path, "end_time.rds"))}
         saveRDS(.bacon, .files[["bacon"]])
       }
 
@@ -110,7 +115,7 @@ BaCoN_pipeline <- function(expression_matrix,
         } else {
           if (verbose) {message("Computing proximity-adjusted BaCoN matrix...")}
 
-          .bacon_no_neighbors <- BaCoN_v2(input_matrix = .cormat_no_neighbors,
+          .bacon_no_neighbors <- BaCoN(input_matrix = .cormat_no_neighbors,
                                           cf = bacon_correction_factor,
                                           verbose = verbose)
 
@@ -120,12 +125,11 @@ BaCoN_pipeline <- function(expression_matrix,
 
       job::export("none")
 
-    }, import = c("BaCoN_v2", "baconize", "sort_gene_pairs",
+    }, import = c("BaCoN", "baconize", "sort_gene_pairs",
                   "effect_matrix", "expression_matrix",
                   ".files",
                   "pairs_to_remove",
-                  "bacon_correction_factor", "cor_method", "verbose", "cache_path"),
-    packages = c("data.table"),
+                  "bacon_correction_factor", "cor_method", "verbose", "cache_path", "record_runtime"),
     title = stringr::str_glue("BaCoN ({basename(cache_path)})")
     )
 
